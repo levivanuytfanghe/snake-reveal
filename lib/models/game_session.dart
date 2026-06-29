@@ -3,29 +3,29 @@ import 'dart:ui';
 class GameSession {
   bool showStartScreen;
   bool isPaused;
-  bool toonWinOverlay;
-  bool toonAfbeeldingZonderOverlay;
+  bool showWinOverlay;
+  bool showImageWithoutOverlay;
   bool isNewHighScore;
-  String? gekozenAfbeelding;
+  String? selectedImage;
   Image? backgroundImage;
 
   GameSession({
     this.showStartScreen = true,
     this.isPaused = false,
-    this.toonWinOverlay = false,
-    this.toonAfbeeldingZonderOverlay = false,
+    this.showWinOverlay = false,
+    this.showImageWithoutOverlay = false,
     this.isNewHighScore = false,
-    this.gekozenAfbeelding,
+    this.selectedImage,
     this.backgroundImage,
   });
 
   void reset() {
     showStartScreen = true;
     isPaused = false;
-    toonWinOverlay = false;
-    toonAfbeeldingZonderOverlay = false;
+    showWinOverlay = false;
+    showImageWithoutOverlay = false;
     isNewHighScore = false;
-    gekozenAfbeelding = null;
+    selectedImage = null;
     backgroundImage = null;
   }
 }

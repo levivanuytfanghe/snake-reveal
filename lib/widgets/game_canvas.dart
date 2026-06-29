@@ -8,10 +8,10 @@ import '../controllers/snake_controller.dart';
 class GameCanvas extends StatelessWidget {
   final SnakeController controller;
   final ui.Image? backgroundImage;
-  final bool toonAfbeeldingZonderOverlay;
+  final bool showImageWithoutOverlay;
   final bool isPaused;
   final bool isGameOver;
-  final bool toonWinOverlay;
+  final bool showWinOverlay;
   final bool isNewHighScore;
   final Future<void> Function() prepareWinOverlay;
   final VoidCallback onBackToMenu;
@@ -21,10 +21,10 @@ class GameCanvas extends StatelessWidget {
     super.key,
     required this.controller,
     required this.backgroundImage,
-    required this.toonAfbeeldingZonderOverlay,
+    required this.showImageWithoutOverlay,
     required this.isPaused,
     required this.isGameOver,
-    required this.toonWinOverlay,
+    required this.showWinOverlay,
     required this.isNewHighScore,
     required this.prepareWinOverlay,
     required this.onBackToMenu,
@@ -46,9 +46,9 @@ class GameCanvas extends StatelessWidget {
         child: Stack(
           children: [
             SnakeCanvas(controller: controller, image: backgroundImage!),
-            if (toonAfbeeldingZonderOverlay &&
+            if (showImageWithoutOverlay &&
                 backgroundImage != null &&
-                !toonWinOverlay)
+                !showWinOverlay)
               Positioned.fill(
                 child: RawImage(image: backgroundImage, fit: BoxFit.cover),
               ),
@@ -62,7 +62,6 @@ class GameCanvas extends StatelessWidget {
                 _buildButton(context, 'Retry', controller.reset),
                 _buildButton(context, 'Back to main menu', onBackToMenu),
               ]),
-            //winconditie:
             if (controller.getProgressPercent() >= 1)
               Positioned.fill(
                 child: FutureBuilder<void>(
@@ -70,7 +69,7 @@ class GameCanvas extends StatelessWidget {
                   builder: (context, snapshot) => const SizedBox.shrink(),
                 ),
               ),
-            if (toonWinOverlay)
+            if (showWinOverlay)
               Positioned.fill(
                 child: WinOverlay(
                   score: controller.getScore(),
@@ -123,7 +122,7 @@ class GameCanvas extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          side: const BorderSide(color: AppColors.neonGroen, width: 2),
+          side: const BorderSide(color: AppColors.neonGreen, width: 2),
           shape: const StadiumBorder(),
         ),
         onPressed: () {

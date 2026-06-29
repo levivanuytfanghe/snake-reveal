@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:snake_reveal/screens/settings_screen.dart';
 import 'package:flutter/services.dart';
 import '../models/snake.dart';
 import '../models/tile_position.dart';
+import '../services/settings_service.dart';
 
 enum Direction { up, down, left, right }
 
@@ -61,7 +61,8 @@ class SnakeController {
   void start(VoidCallback onUpdate) {
     _onUpdate = onUpdate;
     _placeFood();
-    if (SettingsScreen.selectedMode == 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode == 'Fun Mode') {
       _startPowerCycle(initial: _PowerPhase.turbo);
     } else {
       // Classic Mode: no turbo/slow power-ups
@@ -75,7 +76,8 @@ class SnakeController {
   void resume(VoidCallback onUpdate) {
     _onUpdate = onUpdate;
     _restartTimer();
-    if (SettingsScreen.selectedMode == 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode == 'Fun Mode') {
       _ensurePowerCycleRunning();
     } else {
       _powerCycleTimer?.cancel();
@@ -86,7 +88,8 @@ class SnakeController {
   }
 
   Duration _computeBaseDelay() {
-    final speed = SettingsScreen.selectedSpeed;
+    final settings = SettingsService();
+    final speed = settings.selectedSpeed;
     final ms = (600 - speed * 50).clamp(100, 600).toInt();
     return Duration(milliseconds: ms);
   }
@@ -109,7 +112,8 @@ class SnakeController {
   }
 
   void _ensurePowerCycleRunning() {
-    if (SettingsScreen.selectedMode != 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode != 'Fun Mode') {
       _powerCycleTimer?.cancel();
       _powerCycleTimer = null;
       return;
@@ -120,7 +124,8 @@ class SnakeController {
   }
 
   void _startPowerCycle({required _PowerPhase initial}) {
-    if (SettingsScreen.selectedMode != 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode != 'Fun Mode') {
       _powerCycleTimer?.cancel();
       _powerCycleTimer = null;
       _turboFoods.clear();
@@ -134,7 +139,8 @@ class SnakeController {
   }
 
   void _scheduleNextSwitch() {
-    if (SettingsScreen.selectedMode != 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode != 'Fun Mode') {
       _powerCycleTimer?.cancel();
       _powerCycleTimer = null;
       return;
@@ -144,7 +150,8 @@ class SnakeController {
   }
 
   void _switchPhase() {
-    if (SettingsScreen.selectedMode != 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode != 'Fun Mode') {
       _powerCycleTimer?.cancel();
       _powerCycleTimer = null;
       _turboFoods.clear();
@@ -158,7 +165,8 @@ class SnakeController {
   }
 
   void _setPhase(_PowerPhase phase) {
-    if (SettingsScreen.selectedMode != 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode != 'Fun Mode') {
       _turboFoods.clear();
       _slowFoods.clear();
       return;
@@ -189,7 +197,7 @@ class SnakeController {
     }
     final newHead = _getNextHead();
 
-    // Handle Turbo power-up (diamond + ⚡): temporary speed-up, no growth
+    // Handle Turbo power-up (diamond + lightning): temporary speed-up, no growth
     if (_turboFoods.contains(newHead)) {
       _turboFoods.remove(newHead);
       score += 3; // +3 for turbo pickup
@@ -203,7 +211,7 @@ class SnakeController {
       return;
     }
 
-    // Handle Slowmotion power-up (circle + ⏳): temporary slow-down, no growth
+    // Handle Slowmotion power-up (circle + hourglass): temporary slow-down, no growth
     if (_slowFoods.contains(newHead)) {
       _slowFoods.remove(newHead);
       score -= 1; // -1 for slowmo pickup
@@ -219,7 +227,8 @@ class SnakeController {
 
     // Handle special orange block first
     if (_specialFoods.contains(newHead)) {
-      score += SettingsScreen.selectedSpeed.toInt() * 5;
+      final settings = SettingsService();
+      score += settings.selectedSpeed.toInt() * 5;
       // Grow by 5 segments
       final newBody = [newHead, ..._snake.body];
       for (var i = 0; i < 4; i++) {
@@ -240,12 +249,13 @@ class SnakeController {
       return;
     }
     if (_foods.contains(newHead)) {
-      score += SettingsScreen.selectedSpeed.toInt();
+      final settings = SettingsService();
+      score += settings.selectedSpeed.toInt();
       final newBody = [newHead, ..._snake.body];
       _snake = Snake(newBody);
       // Remove the eaten block so it disappears
       _foods.remove(newHead);
-      if (SettingsScreen.selectedMode == 'Fun Mode') {
+      if (settings.selectedMode == 'Fun Mode') {
         _spawnSingleFood();
       } else {
         _placeFood();
@@ -282,13 +292,14 @@ class SnakeController {
   }
 
   void _placeFood() {
+    final settings = SettingsService();
     _foods.clear();
     _specialFoods.clear();
     _turboFoods.clear();
     _slowFoods.clear();
     final random = Random();
     // Spawn 5 blocks in Fun Mode, 1 in Classic Mode
-    final count = SettingsScreen.selectedMode == 'Fun Mode' ? 5 : 1;
+    final count = settings.selectedMode == 'Fun Mode' ? 5 : 1;
     for (var i = 0; i < count; i++) {
       while (true) {
         final x = random.nextInt(20);
@@ -301,7 +312,7 @@ class SnakeController {
       }
     }
     // Spawn one orange block in Fun Mode
-    if (SettingsScreen.selectedMode == 'Fun Mode') {
+    if (settings.selectedMode == 'Fun Mode') {
       _spawnSpecialFood();
       // Turbo/Slow are controlled by the cycle; do not spawn here
     }
@@ -386,7 +397,8 @@ class SnakeController {
     _powerCycleTimer = null;
     // Reset foods and place new blocks for the selected mode
     _placeFood();
-    if (SettingsScreen.selectedMode == 'Fun Mode') {
+    final settings = SettingsService();
+    if (settings.selectedMode == 'Fun Mode') {
       _startPowerCycle(initial: _PowerPhase.turbo);
     } else {
       _powerCycleTimer?.cancel();

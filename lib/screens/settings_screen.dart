@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import '../services/settings_service.dart';
 
 class SettingsScreen extends StatelessWidget {
-  static double selectedSpeed = 3;
-  static String selectedMode = 'Classic Mode';
-
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final settings = SettingsService();
     return Scaffold(
-      appBar: AppBar(title: const Text('Instellingen')),
+      appBar: AppBar(title: const Text('Settings')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -23,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 12),
             StatefulBuilder(
               builder: (context, setState) {
-                String mode = selectedMode;
+                String mode = settings.selectedMode;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -34,7 +33,7 @@ class SettingsScreen extends StatelessWidget {
                       onChanged: (value) {
                         setState(() {
                           mode = value!;
-                          selectedMode = value;
+                          settings.setMode(value);
                         });
                       },
                     ),
@@ -45,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
                       onChanged: (value) {
                         setState(() {
                           mode = value!;
-                          selectedMode = value;
+                          settings.setMode(value);
                         });
                       },
                     ),
@@ -54,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             const Text(
-              'Kies een map:',
+              'Choose a theme:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -71,16 +70,15 @@ class SettingsScreen extends StatelessWidget {
                 );
               }),
             ),
-
             const SizedBox(height: 24),
             const Text(
-              'Snelheid van de slang:',
+              'Snake speed:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             StatefulBuilder(
               builder: (context, setState) {
-                double speed = selectedSpeed;
+                double speed = settings.selectedSpeed;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +92,7 @@ class SettingsScreen extends StatelessWidget {
                       onChanged: (value) {
                         setState(() {
                           speed = value;
-                          selectedSpeed = value;
+                          settings.setSpeed(value);
                         });
                       },
                     ),
@@ -102,9 +100,8 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
             ),
-
             const Text(
-              'Thema:',
+              'Theme:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -113,7 +110,7 @@ class SettingsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Terug'),
+              child: const Text('Back'),
             ),
           ],
         ),

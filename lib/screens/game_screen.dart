@@ -41,12 +41,12 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     // Ensure these are reset at init
-    session.toonAfbeeldingZonderOverlay = false;
-    session.toonWinOverlay = false;
+    session.showImageWithoutOverlay = false;
+    session.showWinOverlay = false;
 
     snakeController = SnakeController();
     snakeController.onDirectionInput = highlightControllerButton;
-    loadImage('assets/images/slangen/slangen1.png').then((img) {
+    loadImage('assets/images/snakes/snakes1.png').then((img) {
       setState(() {
         session.backgroundImage = img;
       });
@@ -66,7 +66,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   bool hasFocused = false;
-  bool _hasNewUnlock = false; // indicator for Reveal Gallery button
+  bool _hasNewUnlock = false;
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +105,12 @@ class _GameScreenState extends State<GameScreen> {
             ? HomeScreen(
                 hasNewUnlock: _hasNewUnlock,
                 onStartGame: () async {
-                  session.gekozenAfbeelding =
+                  session.selectedImage =
                       await GameStateService.selectImageToReveal();
 
-                  if (session.gekozenAfbeelding != null) {
-                    final geladen = await loadNetworkImage(
-                      session.gekozenAfbeelding!,
+                  if (session.selectedImage != null) {
+                    final loaded = await loadNetworkImage(
+                      session.selectedImage!,
                     );
                     await GameStateService.clearSelectedImage();
 
@@ -118,10 +118,10 @@ class _GameScreenState extends State<GameScreen> {
                       return;
                     }
                     setState(() {
-                      session.backgroundImage = geladen;
+                      session.backgroundImage = loaded;
                       session.showStartScreen = false;
-                      session.toonAfbeeldingZonderOverlay = false;
-                      session.toonWinOverlay = false;
+                      session.showImageWithoutOverlay = false;
+                      session.showWinOverlay = false;
                       snakeController.start(() {
                         setState(() {});
                       });
@@ -159,7 +159,7 @@ class _GameScreenState extends State<GameScreen> {
                     return;
                   }
                   setState(() {
-                    _hasNewUnlock = false; // user visited gallery, clear dot
+                    _hasNewUnlock = false;
                   });
                 },
               )
@@ -173,21 +173,21 @@ class _GameScreenState extends State<GameScreen> {
                           child: GameCanvas(
                             controller: snakeController,
                             backgroundImage: session.backgroundImage!,
-                            toonAfbeeldingZonderOverlay:
-                                session.toonAfbeeldingZonderOverlay,
+                            showImageWithoutOverlay:
+                                session.showImageWithoutOverlay,
                             isPaused: session.isPaused,
                             isGameOver: snakeController.isGameOver,
-                            toonWinOverlay: session.toonWinOverlay,
+                            showWinOverlay: session.showWinOverlay,
                             isNewHighScore: session.isNewHighScore,
                             prepareWinOverlay: () async {
-                              if (session.toonWinOverlay ||
-                                  session.toonAfbeeldingZonderOverlay) {
+                              if (session.showWinOverlay ||
+                                  session.showImageWithoutOverlay) {
                                 return;
                               }
                               snakeController.stop();
 
                               await GameStateService.prepareWinOverlay(
-                                imageUrl: session.gekozenAfbeelding!,
+                                imageUrl: session.selectedImage!,
                                 score: snakeController.getScore(),
                                 onComplete: (isNew) async {
                                   if (!mounted) {
@@ -196,15 +196,14 @@ class _GameScreenState extends State<GameScreen> {
 
                                   final unlockedNew = await helpers
                                       .markImageAsUnlocked(
-                                        session.gekozenAfbeelding!,
+                                        session.selectedImage!,
                                       );
 
                                   setState(() {
-                                    session.toonAfbeeldingZonderOverlay = true;
+                                    session.showImageWithoutOverlay = true;
                                     session.isNewHighScore = isNew;
                                     if (unlockedNew) {
-                                      _hasNewUnlock =
-                                          true; // only show indicator if something new was unlocked
+                                      _hasNewUnlock = true;
                                     }
                                   });
 
@@ -215,7 +214,7 @@ class _GameScreenState extends State<GameScreen> {
                                       return;
                                     }
                                     setState(() {
-                                      session.toonWinOverlay = true;
+                                      session.showWinOverlay = true;
                                     });
                                   });
                                 },
@@ -223,10 +222,9 @@ class _GameScreenState extends State<GameScreen> {
                             },
                             onBackToMenu: () {
                               setState(() {
-                                // Return to the start screen, but keep reveal-gallery flags intact
                                 session.showStartScreen = true;
                                 session.isPaused = false;
-                                session.toonWinOverlay = false;
+                                session.showWinOverlay = false;
                                 snakeController.reset();
                               });
                             },

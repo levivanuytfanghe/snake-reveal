@@ -1,30 +1,27 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ImageService {
-  static Future<String?> kiesOnthullendeAfbeelding(
+  static Future<String?> selectImageToReveal(
     Map<String, List<String>> themes,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    // Gebruik vooraf gekozen achtergrond, indien aanwezig
     final nextBg = prefs.getString('nextBackground');
     if (nextBg != null) {
-      // Consumptie: wis de keuze na gebruik
       await prefs.remove('nextBackground');
       return nextBg;
     }
     final unlocked = prefs.getStringList('unlockedImages') ?? [];
 
-    // Verzamelen van alle nog niet vrijgegeven afbeeldingen
-    final alleOnthulbare = <String>[];
-    for (final lijst in themes.values) {
-      alleOnthulbare.addAll(lijst.where((img) => !unlocked.contains(img)));
+    final allRevealable = <String>[];
+    for (final list in themes.values) {
+      allRevealable.addAll(list.where((img) => !unlocked.contains(img)));
     }
 
-    if (alleOnthulbare.isEmpty) return null; // alles reeds vrijgespeeld
+    if (allRevealable.isEmpty) return null;
 
-    alleOnthulbare.shuffle();
-    final gekozen = alleOnthulbare.first;
-    return gekozen;
+    allRevealable.shuffle();
+    final chosen = allRevealable.first;
+    return chosen;
   }
 
   Future<Map<String, bool>> getBadgeMap(
@@ -58,13 +55,11 @@ class ImageService {
     }
   }
 
-  /// Stel de achtergrond in voor het volgende spel.
   Future<void> setNextBackground(String imageUrl) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('nextBackground', imageUrl);
   }
 
-  /// Haal de ingestelde achtergrond op voor het volgende spel.
   Future<String?> getNextBackground() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('nextBackground');
