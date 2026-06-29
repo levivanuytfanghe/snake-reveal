@@ -3,17 +3,20 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../controllers/snake_controller.dart';
 import '../app/app_colors.dart';
+import 'dart:math';
 
 class SnakeCanvas extends StatefulWidget {
   final SnakeController controller;
   final ui.Image image;
   final bool revealAll;
+  final List<Point<int>> walls;
 
   const SnakeCanvas({
     super.key,
     required this.controller,
     required this.image,
     this.revealAll = false,
+    this.walls = const [],
   });
 
   @override
@@ -46,6 +49,7 @@ class _SnakeCanvasState extends State<SnakeCanvas>
         controller: widget.controller,
         image: widget.image,
         revealAll: widget.revealAll,
+        walls: widget.walls,
         animation: _anim,
       ),
       child: Container(),
@@ -57,12 +61,14 @@ class GamePainter extends CustomPainter {
   final SnakeController controller;
   final ui.Image image;
   final bool revealAll;
+  final List<Point<int>> walls;
   final Animation<double> animation;
 
   GamePainter({
     required this.controller,
     required this.image,
     required this.revealAll,
+    required this.walls,
     required this.animation,
   }) : super(repaint: animation);
 
@@ -114,6 +120,26 @@ class GamePainter extends CustomPainter {
       final dstRect = Rect.fromLTWH(
         horizontalOffset + dx * cellWidth,
         dy * cellHeight,
+        cellWidth,
+        cellHeight,
+      );
+
+      canvas.drawImageRect(image, srcRect, dstRect, Paint());
+    }
+
+    // Draw map walls using the same grid calculations as the snake and food.
+    // Walls show the matching part of the hidden background image.
+    for (final wall in walls) {
+      final srcRect = Rect.fromLTWH(
+        wall.x * (image.width / columns),
+        wall.y * (image.height / rows),
+        image.width / columns,
+        image.height / rows,
+      );
+
+      final dstRect = Rect.fromLTWH(
+        horizontalOffset + wall.x * cellWidth,
+        wall.y * cellHeight,
         cellWidth,
         cellHeight,
       );

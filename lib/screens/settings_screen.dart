@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/settings_service.dart';
+import '../data/maps.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -9,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
     final settings = SettingsService();
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,17 +102,43 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             const Text(
-              'Theme:',
+              'Choose a map:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
+            StatefulBuilder(
+              builder: (context, setState) {
+                String selectedMapName = settings.selectedMapName;
+
+                return Column(
+                  children: gameMaps.map((gameMap) {
+                    return RadioListTile<String>(
+                      title: Text(gameMap.name),
+                      value: gameMap.name,
+                      groupValue: selectedMapName,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMapName = value!;
+                          settings.setMapName(value);
+                        });
+                      },
+                    );
+                  }).toList(),
+                );
               },
-              child: const Text('Back'),
             ),
+            const SizedBox(height: 12),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Back'),
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),

@@ -36,6 +36,7 @@ class SnakeController {
   // --- Fun Mode power-ups ---
   final List<TilePosition> _turboFoods = [];
   final List<TilePosition> _slowFoods = [];
+  final List<TilePosition> _walls = [];
   List<TilePosition> get specialFoods => _specialFoods;
   List<TilePosition> get turboFoods => _turboFoods;
   List<TilePosition> get slowFoods => _slowFoods;
@@ -53,6 +54,38 @@ class SnakeController {
   Snake get snake => _snake;
   List<TilePosition> get foods => _foods;
   Direction get direction => _direction;
+
+  void setWalls(List<Point<int>> walls) {
+    _walls
+      ..clear()
+      ..addAll(walls.map((wall) => TilePosition(wall.x, wall.y)));
+  }
+
+  void setSafeStartPosition() {
+    final startOptions = [
+      [TilePosition(10, 15), TilePosition(10, 16), TilePosition(10, 17)],
+      [TilePosition(3, 15), TilePosition(3, 16), TilePosition(3, 17)],
+      [TilePosition(16, 15), TilePosition(16, 16), TilePosition(16, 17)],
+      [TilePosition(10, 3), TilePosition(10, 4), TilePosition(10, 5)],
+      [TilePosition(10, 26), TilePosition(10, 27), TilePosition(10, 28)],
+      [TilePosition(3, 3), TilePosition(3, 4), TilePosition(3, 5)],
+      [TilePosition(16, 3), TilePosition(16, 4), TilePosition(16, 5)],
+      [TilePosition(3, 26), TilePosition(3, 27), TilePosition(3, 28)],
+      [TilePosition(16, 26), TilePosition(16, 27), TilePosition(16, 28)],
+    ];
+
+    final safeStart = startOptions.firstWhere(
+      (option) => option.every((position) => !_walls.contains(position)),
+      orElse: () => [
+        TilePosition(1, 1),
+        TilePosition(1, 2),
+        TilePosition(1, 3),
+      ],
+    );
+
+    _snake = Snake(safeStart);
+    _direction = Direction.up;
+  }
 
   void changeDirection(Direction newDirection) {
     _direction = newDirection;
@@ -241,7 +274,7 @@ class SnakeController {
       return;
     }
 
-    if (_snake.body.contains(newHead)) {
+    if (_snake.body.contains(newHead) || _walls.contains(newHead)) {
       _isGameOver = true;
       _timer?.cancel();
       _timer = null;
@@ -305,7 +338,9 @@ class SnakeController {
         final x = random.nextInt(20);
         final y = random.nextInt(30);
         final pos = TilePosition(x, y);
-        if (!_snake.body.contains(pos) && !_foods.contains(pos)) {
+        if (!_snake.body.contains(pos) &&
+            !_foods.contains(pos) &&
+            !_walls.contains(pos)) {
           _foods.add(pos);
           break;
         }
@@ -325,7 +360,9 @@ class SnakeController {
       final x = random.nextInt(20);
       final y = random.nextInt(30);
       final pos = TilePosition(x, y);
-      if (!_snake.body.contains(pos) && !_foods.contains(pos)) {
+      if (!_snake.body.contains(pos) &&
+          !_foods.contains(pos) &&
+          !_walls.contains(pos)) {
         _foods.add(pos);
         break;
       }
@@ -341,7 +378,8 @@ class SnakeController {
       final pos = TilePosition(x, y);
       if (!_snake.body.contains(pos) &&
           !_foods.contains(pos) &&
-          !_specialFoods.contains(pos)) {
+          !_specialFoods.contains(pos) &&
+          !_walls.contains(pos)) {
         _specialFoods.add(pos);
         break;
       }
@@ -358,7 +396,8 @@ class SnakeController {
           !_foods.contains(pos) &&
           !_specialFoods.contains(pos) &&
           !_turboFoods.contains(pos) &&
-          !_slowFoods.contains(pos)) {
+          !_slowFoods.contains(pos) &&
+          !_walls.contains(pos)) {
         _turboFoods.add(pos);
         break;
       }
@@ -375,7 +414,8 @@ class SnakeController {
           !_foods.contains(pos) &&
           !_specialFoods.contains(pos) &&
           !_turboFoods.contains(pos) &&
-          !_slowFoods.contains(pos)) {
+          !_slowFoods.contains(pos) &&
+          !_walls.contains(pos)) {
         _slowFoods.add(pos);
         break;
       }
@@ -383,12 +423,7 @@ class SnakeController {
   }
 
   void reset() {
-    _snake = Snake([
-      TilePosition(10, 15),
-      TilePosition(10, 16),
-      TilePosition(10, 17),
-    ]);
-    _direction = Direction.up;
+    setSafeStartPosition();
     _isGameOver = false;
     _effectTimer?.cancel();
     _speedFactor = 1.0;

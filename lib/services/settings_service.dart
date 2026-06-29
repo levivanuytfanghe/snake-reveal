@@ -8,13 +8,19 @@ class SettingsService {
   SettingsService._();
 
   String _selectedMode = 'Classic Mode';
+  String _selectedMapName = 'Classic';
   double _selectedSpeed = 3.0;
 
   String get selectedMode => _selectedMode;
   double get selectedSpeed => _selectedSpeed;
+  String get selectedMapName => _selectedMapName;
 
   void setMode(String mode) {
     _selectedMode = mode;
+  }
+
+  void setMapName(String mapName) {
+    _selectedMapName = mapName;
   }
 
   void setSpeed(double speed) {
@@ -23,6 +29,7 @@ class SettingsService {
 
   void reset() {
     _selectedMode = 'Classic Mode';
+    _selectedMapName = 'Classic';
     _selectedSpeed = 3.0;
   }
 }

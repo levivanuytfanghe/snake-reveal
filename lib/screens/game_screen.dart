@@ -9,8 +9,10 @@ import '../widgets/game_controls.dart';
 import '../controllers/snake_controller.dart';
 import 'settings_screen.dart';
 import '../services/image_loader.dart';
+import '../services/settings_service.dart';
 import '../data/image_status_helpers.dart' as helpers;
 import 'reveal_gallery_screen.dart';
+import '../data/maps.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -23,12 +25,21 @@ class _GameScreenState extends State<GameScreen> {
   final GlobalKey<GameControlsState> gameControlsKey = GlobalKey();
 
   late GameSession session;
+  GameMap currentMap = classicMap;
 
   late SnakeController snakeController;
   late FocusNode _keyboardFocusNode;
 
   void highlightControllerButton(Direction direction) {
     gameControlsKey.currentState?.highlight(direction);
+  }
+
+  void updateCurrentMapFromSettings() {
+    final settings = SettingsService();
+    currentMap = gameMaps.firstWhere(
+      (gameMap) => gameMap.name == settings.selectedMapName,
+      orElse: () => classicMap,
+    );
   }
 
   @override
@@ -43,8 +54,11 @@ class _GameScreenState extends State<GameScreen> {
     session.showImageWithoutOverlay = false;
     session.showWinOverlay = false;
 
+    updateCurrentMapFromSettings();
     snakeController = SnakeController();
     snakeController.onDirectionInput = highlightControllerButton;
+    snakeController.setWalls(currentMap.walls);
+    snakeController.setSafeStartPosition();
     loadImage('assets/images/snakes/snakes1.png').then((img) {
       setState(() {
         session.backgroundImage = img;
@@ -117,10 +131,13 @@ class _GameScreenState extends State<GameScreen> {
                       return;
                     }
                     setState(() {
+                      updateCurrentMapFromSettings();
                       session.backgroundImage = loaded;
                       session.showStartScreen = false;
                       session.showImageWithoutOverlay = false;
                       session.showWinOverlay = false;
+                      snakeController.setWalls(currentMap.walls);
+                      snakeController.setSafeStartPosition();
                       snakeController.start(() {
                         setState(() {});
                       });
@@ -171,6 +188,7 @@ class _GameScreenState extends State<GameScreen> {
                           flex: 6,
                           child: GameCanvas(
                             controller: snakeController,
+                            currentMap: currentMap,
                             backgroundImage: session.backgroundImage!,
                             showImageWithoutOverlay:
                                 session.showImageWithoutOverlay,
@@ -224,6 +242,8 @@ class _GameScreenState extends State<GameScreen> {
                                 session.showStartScreen = true;
                                 session.isPaused = false;
                                 session.showWinOverlay = false;
+                                updateCurrentMapFromSettings();
+                                snakeController.setWalls(currentMap.walls);
                                 snakeController.reset();
                               });
                             },

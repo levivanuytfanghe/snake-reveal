@@ -4,9 +4,11 @@ import 'snake_canvas.dart';
 import 'win_overlay.dart';
 import '../app/app_colors.dart';
 import '../controllers/snake_controller.dart';
+import '../data/maps.dart';
 
 class GameCanvas extends StatelessWidget {
   final SnakeController controller;
+  final GameMap currentMap;
   final ui.Image? backgroundImage;
   final bool showImageWithoutOverlay;
   final bool isPaused;
@@ -20,6 +22,7 @@ class GameCanvas extends StatelessWidget {
   const GameCanvas({
     super.key,
     required this.controller,
+    required this.currentMap,
     required this.backgroundImage,
     required this.showImageWithoutOverlay,
     required this.isPaused,
@@ -45,7 +48,11 @@ class GameCanvas extends StatelessWidget {
         height: canvasHeight,
         child: Stack(
           children: [
-            SnakeCanvas(controller: controller, image: backgroundImage!),
+            SnakeCanvas(
+              controller: controller,
+              image: backgroundImage!,
+              walls: currentMap.walls,
+            ),
             if (showImageWithoutOverlay &&
                 backgroundImage != null &&
                 !showWinOverlay)
