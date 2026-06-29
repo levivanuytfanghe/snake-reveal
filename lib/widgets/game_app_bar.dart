@@ -15,7 +15,7 @@ PreferredSizeWidget buildGameAppBar({
       children: [
         Text(
           'Score: ${controller.getScore()}',
-          style: const TextStyle(color: AppColors.neonGroen),
+          style: const TextStyle(color: AppColors.neonGreen),
         ),
         Expanded(
           child: Column(
@@ -24,7 +24,7 @@ PreferredSizeWidget buildGameAppBar({
               Text(
                 '${(controller.getProgressPercent() * 100).toStringAsFixed(1)}%',
                 style: const TextStyle(
-                  color: AppColors.neonGroen,
+                  color: AppColors.neonGreen,
                   fontSize: 12,
                 ),
               ),
@@ -36,7 +36,7 @@ PreferredSizeWidget buildGameAppBar({
                     value: controller.getProgressPercent(),
                     backgroundColor: Colors.white24,
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.neonGroen,
+                      AppColors.neonGreen,
                     ),
                   ),
                 ),
@@ -48,7 +48,7 @@ PreferredSizeWidget buildGameAppBar({
     ),
     actions: [
       IconButton(
-        icon: const Icon(Icons.pause, color: AppColors.neonGroen),
+        icon: const Icon(Icons.pause, color: AppColors.neonGreen),
         onPressed: onPause,
       ),
     ],

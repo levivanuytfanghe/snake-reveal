@@ -44,7 +44,7 @@ class WinOverlay extends StatelessWidget {
                     'Score: $score',
                     style: TextStyle(
                       fontSize: MediaQuery.of(context).size.width * 0.06,
-                      color: AppColors.neonGroen,
+                      color: AppColors.neonGreen,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -65,7 +65,7 @@ class WinOverlay extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      side: BorderSide(color: AppColors.neonGroen, width: 2),
+                      side: BorderSide(color: AppColors.neonGreen, width: 2),
                       shape: const StadiumBorder(),
                     ),
                     onPressed: onBackToMenu,

@@ -145,7 +145,7 @@ class GamePainter extends CustomPainter {
 
     // Rasterlijnen tekenen ná het tekenen van achtergrondafbeelding en voedsel
     final Paint gridPaint = Paint()
-      ..color = AppColors.achtergrond
+      ..color = AppColors.background
       ..strokeWidth = 1;
 
     for (int i = 0; i <= columns; i++) {
