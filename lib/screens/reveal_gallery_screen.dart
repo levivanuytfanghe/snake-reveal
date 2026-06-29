@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/image_status_helpers.dart' as helpers;
@@ -38,13 +37,13 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    setState(() {}); // Forceer rebuild om badge-status te updaten
-    loadThemes(); // herlaad bij terugkomst
+    setState(() {});
+    loadThemes();
   }
 
   Future<void> loadThemes() async {
     final jsonString = await rootBundle.loadString('assets/data/themes.json');
-    final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
+    final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
 
     final Map<String, List<String>> loadedThemeData = jsonMap.map(
       (key, value) => MapEntry(key.toLowerCase(), List<String>.from(value)),
@@ -92,7 +91,6 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                       final imageUrls = themeData[theme.toLowerCase()] ?? [];
                       return GestureDetector(
                         onTap: () async {
-                          // First navigate to detail screen
                           final images = imageUrls;
                           await Navigator.push(
                             context,
@@ -104,7 +102,6 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                             ),
                           );
 
-                          // Refresh the gallery so the badge disappears
                           await loadThemes();
                           if (!mounted) return;
                           setState(() {
@@ -116,7 +113,7 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                             borderRadius: BorderRadius.circular(8),
                             image: const DecorationImage(
                               image: AssetImage(
-                                'assets/images/screens/schubben.png',
+                                'assets/images/screens/scales.png',
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -146,7 +143,6 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                                   key: ValueKey('badge-$theme-$_badgeEpoch'),
                                   future: helpers.loadImageStatuses(imageUrls),
                                   builder: (context, snapshot) {
-                                    // (debug print statements removed)
                                     if (snapshot.connectionState ==
                                             ConnectionState.done &&
                                         snapshot.hasData &&
@@ -157,7 +153,7 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                                       return CircleAvatar(
                                         radius: 14,
                                         backgroundColor: Colors.red,
-                                        child: Text(
+                                        child: const Text(
                                           'NEW',
                                           style: TextStyle(
                                             fontSize: 10,
@@ -185,7 +181,7 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: const DecorationImage(
-                      image: AssetImage('assets/images/screens/schubben.png'),
+                      image: AssetImage('assets/images/screens/scales.png'),
                       fit: BoxFit.cover,
                     ),
                   ),

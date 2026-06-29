@@ -8,7 +8,7 @@ import '../widgets/game_canvas.dart';
 import '../widgets/game_controls.dart';
 import '../controllers/snake_controller.dart';
 import 'settings_screen.dart';
-import '../data/image_loader.dart';
+import '../services/image_loader.dart';
 import '../data/image_status_helpers.dart' as helpers;
 import 'reveal_gallery_screen.dart';
 
@@ -40,7 +40,6 @@ class _GameScreenState extends State<GameScreen> {
       _keyboardFocusNode.requestFocus();
     });
 
-    // Ensure these are reset at init
     session.showImageWithoutOverlay = false;
     session.showWinOverlay = false;
 
