@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../app/app_colors.dart';
 import '../data/image_status_helpers.dart' as helpers;
 import 'theme_detail_screen.dart';
 
@@ -64,7 +65,7 @@ class RevealGalleryScreenState extends State<RevealGalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reveal Gallery'),
-        backgroundColor: const Color(0xFF321C47),
+        backgroundColor: AppColors.appBar,
         foregroundColor: Colors.white,
       ),
       body: Stack(

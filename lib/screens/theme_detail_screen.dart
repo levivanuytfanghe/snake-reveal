@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/image_status_helpers.dart' as helpers;
 import '../data/image_service.dart';
+import '../app/app_colors.dart';
 
 class ThemeDetailScreen extends StatefulWidget {
   final String theme;
@@ -144,7 +145,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
             },
           ),
           title: Text(widget.theme),
-          backgroundColor: const Color(0xFF321C47),
+          backgroundColor: AppColors.appBar,
           foregroundColor: Colors.white,
         ),
         body: Stack(
@@ -183,7 +184,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen> {
                                 style: TextStyle(color: Colors.white),
                                 textAlign: TextAlign.center,
                               ),
-                              backgroundColor: const Color(0xFF321C47),
+                              backgroundColor: AppColors.appBar,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

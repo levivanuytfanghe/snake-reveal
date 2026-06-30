@@ -92,6 +92,87 @@ final gatesMap = GameMap(
   ],
 );
 
+final spiralMap = GameMap(
+  name: "Spiral",
+  walls: [
+    for (int x = 3; x <= 16; x++) Point(x, 4),
+    for (int y = 5; y <= 25; y++) Point(16, y),
+    for (int x = 4; x <= 15; x++) Point(x, 25),
+    for (int y = 8; y <= 24; y++) Point(4, y),
+    for (int x = 5; x <= 13; x++) Point(x, 8),
+    for (int y = 9; y <= 21; y++) Point(13, y),
+    for (int x = 7; x <= 12; x++) Point(x, 21),
+    for (int y = 12; y <= 20; y++) Point(7, y),
+    for (int x = 8; x <= 10; x++) Point(x, 12),
+  ],
+);
+
+final mazeMap = GameMap(
+  name: "Maze",
+  walls: [
+    for (int y = 3; y <= 11; y++) Point(4, y),
+    for (int y = 15; y <= 26; y++) Point(4, y),
+    for (int y = 4; y <= 18; y++) Point(8, y),
+    for (int y = 22; y <= 26; y++) Point(8, y),
+    for (int y = 3; y <= 9; y++) Point(12, y),
+    for (int y = 13; y <= 26; y++) Point(12, y),
+    for (int y = 6; y <= 20; y++) Point(16, y),
+    for (int x = 2; x <= 7; x++) Point(x, 13),
+    for (int x = 9; x <= 15; x++) Point(x, 21),
+  ],
+);
+
+final zigzagMap = GameMap(
+  name: "Zigzag",
+  walls: [
+    for (int x = 2; x <= 15; x++) Point(x, 5),
+    for (int x = 5; x <= 18; x++) Point(x, 10),
+    for (int x = 2; x <= 15; x++) Point(x, 15),
+    for (int x = 5; x <= 18; x++) Point(x, 20),
+    for (int x = 2; x <= 15; x++) Point(x, 25),
+  ],
+);
+
+final fortressMap = GameMap(
+  name: "Fortress",
+  walls:
+      [
+            for (int x = 3; x <= 16; x++) Point(x, 5),
+            for (int x = 3; x <= 16; x++) Point(x, 24),
+            for (int y = 6; y <= 23; y++) Point(3, y),
+            for (int y = 6; y <= 23; y++) Point(16, y),
+
+            // Gates in the fortress walls.
+            Point(9, 5),
+            Point(10, 5),
+            Point(9, 24),
+            Point(10, 24),
+            Point(3, 14),
+            Point(3, 15),
+            Point(16, 14),
+            Point(16, 15),
+
+            // Inner obstacles.
+            for (int x = 7; x <= 12; x++) Point(x, 10),
+            for (int x = 7; x <= 12; x++) Point(x, 19),
+            for (int y = 12; y <= 17; y++) Point(7, y),
+            for (int y = 12; y <= 17; y++) Point(12, y),
+          ]
+          .where(
+            (point) => ![
+              Point(9, 5),
+              Point(10, 5),
+              Point(9, 24),
+              Point(10, 24),
+              Point(3, 14),
+              Point(3, 15),
+              Point(16, 14),
+              Point(16, 15),
+            ].contains(point),
+          )
+          .toList(),
+);
+
 final gameMaps = [
   classicMap,
   crossMap,
@@ -99,4 +180,8 @@ final gameMaps = [
   fourCornersMap,
   pillarsMap,
   gatesMap,
+  spiralMap,
+  mazeMap,
+  zigzagMap,
+  fortressMap,
 ];

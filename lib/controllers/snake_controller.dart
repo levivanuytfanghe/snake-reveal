@@ -18,7 +18,14 @@ class SnakeController {
   int getScore() => score;
 
   double getProgressPercent() {
-    return (_snake.body.length / 540).clamp(0.0, 1.0);
+    const totalTiles = 20 * 30;
+
+    final revealedTiles = <String>{
+      for (final segment in _snake.body) '${segment.x},${segment.y}',
+      for (final wall in _walls) '${wall.x},${wall.y}',
+    };
+
+    return (revealedTiles.length / totalTiles).clamp(0.0, 1.0);
   }
 
   Snake _snake = Snake([
@@ -62,29 +69,28 @@ class SnakeController {
   }
 
   void setSafeStartPosition() {
-    final startOptions = [
-      [TilePosition(10, 15), TilePosition(10, 16), TilePosition(10, 17)],
-      [TilePosition(3, 15), TilePosition(3, 16), TilePosition(3, 17)],
-      [TilePosition(16, 15), TilePosition(16, 16), TilePosition(16, 17)],
-      [TilePosition(10, 3), TilePosition(10, 4), TilePosition(10, 5)],
-      [TilePosition(10, 26), TilePosition(10, 27), TilePosition(10, 28)],
-      [TilePosition(3, 3), TilePosition(3, 4), TilePosition(3, 5)],
-      [TilePosition(16, 3), TilePosition(16, 4), TilePosition(16, 5)],
-      [TilePosition(3, 26), TilePosition(3, 27), TilePosition(3, 28)],
-      [TilePosition(16, 26), TilePosition(16, 27), TilePosition(16, 28)],
+    final preferredStart = [
+      // Start near the bottom-left, one row above the bottom border.
+      // The head is on the right, so the snake starts by moving right.
+      TilePosition(4, 28),
+      TilePosition(3, 28),
+      TilePosition(2, 28),
     ];
 
-    final safeStart = startOptions.firstWhere(
-      (option) => option.every((position) => !_walls.contains(position)),
-      orElse: () => [
-        TilePosition(1, 1),
-        TilePosition(1, 2),
-        TilePosition(1, 3),
-      ],
-    );
+    final fallbackStart = [
+      TilePosition(4, 27),
+      TilePosition(3, 27),
+      TilePosition(2, 27),
+    ];
 
-    _snake = Snake(safeStart);
-    _direction = Direction.up;
+    final startPosition =
+        preferredStart.every((position) => !_walls.contains(position))
+        ? preferredStart
+        : fallbackStart;
+
+    _snake = Snake(startPosition);
+    _direction = Direction.right;
+    _nextDirection = null;
   }
 
   void changeDirection(Direction newDirection) {
@@ -93,7 +99,13 @@ class SnakeController {
 
   void start(VoidCallback onUpdate) {
     _onUpdate = onUpdate;
+    _isGameOver = false;
+
+    _timer?.cancel();
+    _timer = null;
+
     _placeFood();
+
     final settings = SettingsService();
     if (settings.selectedMode == 'Fun Mode') {
       _startPowerCycle(initial: _PowerPhase.turbo);
@@ -104,6 +116,9 @@ class SnakeController {
       _turboFoods.clear();
       _slowFoods.clear();
     }
+
+    _restartTimer();
+    _onUpdate?.call();
   }
 
   void resume(VoidCallback onUpdate) {
@@ -340,6 +355,9 @@ class SnakeController {
         final pos = TilePosition(x, y);
         if (!_snake.body.contains(pos) &&
             !_foods.contains(pos) &&
+            !_specialFoods.contains(pos) &&
+            !_turboFoods.contains(pos) &&
+            !_slowFoods.contains(pos) &&
             !_walls.contains(pos)) {
           _foods.add(pos);
           break;
@@ -362,6 +380,9 @@ class SnakeController {
       final pos = TilePosition(x, y);
       if (!_snake.body.contains(pos) &&
           !_foods.contains(pos) &&
+          !_specialFoods.contains(pos) &&
+          !_turboFoods.contains(pos) &&
+          !_slowFoods.contains(pos) &&
           !_walls.contains(pos)) {
         _foods.add(pos);
         break;
@@ -379,6 +400,8 @@ class SnakeController {
       if (!_snake.body.contains(pos) &&
           !_foods.contains(pos) &&
           !_specialFoods.contains(pos) &&
+          !_turboFoods.contains(pos) &&
+          !_slowFoods.contains(pos) &&
           !_walls.contains(pos)) {
         _specialFoods.add(pos);
         break;
