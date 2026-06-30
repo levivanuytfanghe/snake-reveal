@@ -60,16 +60,18 @@ final boxMap = GameMap(
 final fourCornersMap = GameMap(
   name: "Four Corners",
   walls: [
-    // Corner blocks placed further inside the border.
-    // This avoids confusion with the normal edge-of-screen game over collision.
-    for (int x = 2; x <= 4; x++)
-      for (int y = 2; y <= 4; y++) Point(x, y),
-    for (int x = 15; x <= 17; x++)
-      for (int y = 2; y <= 4; y++) Point(x, y),
-    for (int x = 2; x <= 4; x++)
-      for (int y = 24; y <= 26; y++) Point(x, y),
-    for (int x = 15; x <= 17; x++)
-      for (int y = 24; y <= 26; y++) Point(x, y),
+    // Top-left corner.
+    for (int x = 2; x <= 6; x++) Point(x, 2),
+    for (int y = 2; y <= 6; y++) Point(2, y),
+    // Top-right corner.
+    for (int x = 13; x <= 17; x++) Point(x, 2),
+    for (int y = 2; y <= 6; y++) Point(17, y),
+    // Bottom-left corner.
+    for (int x = 2; x <= 6; x++) Point(x, 27),
+    for (int y = 23; y <= 27; y++) Point(2, y),
+    // Bottom-right corner.
+    for (int x = 13; x <= 17; x++) Point(x, 27),
+    for (int y = 23; y <= 27; y++) Point(17, y),
   ],
 );
 
@@ -126,9 +128,9 @@ final zigzagMap = GameMap(
   name: "Zigzag",
   walls: [
     for (int x = 2; x <= 15; x++) Point(x, 5),
-    for (int x = 5; x <= 18; x++) Point(x, 10),
+    for (int x = 5; x <= 17; x++) Point(x, 10),
     for (int x = 2; x <= 15; x++) Point(x, 15),
-    for (int x = 5; x <= 18; x++) Point(x, 20),
+    for (int x = 5; x <= 17; x++) Point(x, 20),
     for (int x = 2; x <= 15; x++) Point(x, 25),
   ],
 );
