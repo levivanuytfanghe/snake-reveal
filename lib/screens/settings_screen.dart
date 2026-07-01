@@ -111,20 +111,31 @@ class SettingsScreen extends StatelessWidget {
                     builder: (context, setState) {
                       String selectedMapName = settings.selectedMapName;
 
-                      return Column(
-                        children: gameMaps.map((gameMap) {
-                          return _SettingsRadioTile(
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: gameMaps.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 0.82,
+                            ),
+                        itemBuilder: (context, index) {
+                          final gameMap = gameMaps[index];
+                          return _MapButton(
                             title: gameMap.name,
-                            value: gameMap.name,
-                            groupValue: selectedMapName,
-                            onChanged: (value) {
+                            imagePath: _mapImagePath(gameMap.name),
+                            isSelected: selectedMapName == gameMap.name,
+                            onTap: () {
                               setState(() {
-                                selectedMapName = value!;
-                                settings.setMapName(value);
+                                selectedMapName = gameMap.name;
+                                settings.setMapName(gameMap.name);
                               });
                             },
                           );
-                        }).toList(),
+                        },
                       );
                     },
                   ),
@@ -158,6 +169,11 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String _mapImagePath(String mapName) {
+  final fileName = mapName.toLowerCase().replaceAll(' ', '');
+  return 'assets/images/maps/$fileName.png';
 }
 
 class _SettingsPanel extends StatelessWidget {
@@ -247,6 +263,67 @@ class _SettingsRadioTile extends StatelessWidget {
             ? null
             : Text(subtitle!, style: const TextStyle(color: Colors.white70)),
         onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+class _MapButton extends StatelessWidget {
+  final String title;
+  final String imagePath;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _MapButton({
+    required this.title,
+    required this.imagePath,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.neonGreen.withValues(alpha: 0.16)
+              : Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.neonGreen : Colors.white24,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.neonGreen.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Column(
+          children: [
+            Expanded(child: Image.asset(imagePath, fit: BoxFit.contain)),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

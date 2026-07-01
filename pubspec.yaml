@@ -32,11 +32,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/snakes/snakes1.png
-    - assets/images/screens/slang_op_paars.png
-    - assets/images/screens/controller.png
-    - assets/images/screens/reveal_gallery.png
-    - assets/images/screens/scales.png
-    - assets/images/screens/question.png
     - assets/data/themes.json
-    
+    - assets/images/
+    - assets/images/maps/
+    - assets/images/screens/
+    - assets/images/snakes/
